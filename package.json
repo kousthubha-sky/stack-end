@@ -1,5 +1,5 @@
 {
-  "name": "stack-end",
+  "name": "@kousthubha/stack-end",
   "version": "1.0.0",
   "description": "CLI tool for scaffolding backend templates",
   "type": "module",
@@ -30,7 +30,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kousthubha-sky/stack-end.git"
+    "url": "git+https://github.com/kousthubha-sky/stack-end.git"
   },
   "homepage": "https://github.com/kousthubha-sky/stack-end#readme",
   "bugs": {
