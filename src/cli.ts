@@ -10,7 +10,7 @@ import type { Template } from './templates.js';
 program
   .name('stack-end')
   .description('CLI tool for scaffolding backend templates')
-  .version('0.0.1');
+  .version('1.0.0');
 
 program
   .argument('<template>', 'Template name to scaffold')
