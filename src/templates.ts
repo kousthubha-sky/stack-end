@@ -8,20 +8,14 @@ export interface Template {
 export const availableTemplates: Template[] = [
   {
     name: 'better-auth-mongodb',
-    description: 'Backend template with Better Auth and MongoDB',
-    url: 'https://github.com/example/better-auth-mongodb-template.git',
-    version: '1.0.0'
+    description: 'Better Auth + MongoDB',
+    url: 'https://github.com/backend-bits/better-auth-mongodb',
+    version: 'main'
   },
   {
-    name: 'express-prisma-postgres',
-    description: 'Express.js with Prisma ORM and PostgreSQL',
-    url: 'https://github.com/example/express-prisma-postgres-template.git',
-    version: '1.0.0'
-  },
-  {
-    name: 'fastify-typeorm-mysql',
-    description: 'Fastify with TypeORM and MySQL',
-    url: 'https://github.com/example/fastify-typeorm-mysql-template.git',
-    version: '1.0.0'
+    name: 'portfolio-3',
+    description: 'Portfolio Template',
+    url: 'https://github.com/backend-bits/portfolio-3',
+    version: 'main'
   }
 ];

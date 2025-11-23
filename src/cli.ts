@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk';
-import ora from 'ora';
+import ora, { Ora } from 'ora';
 import { program } from 'commander';
-import { scaffoldTemplate } from './index.js';
+import { scaffoldTemplate, displaySetupInstructions, DependencyManager } from './index.js';
 import { availableTemplates } from './templates.js';
+import type { Template } from './templates.js';
 
 program
   .name('stack-end')
@@ -14,39 +15,79 @@ program
 program
   .argument('<template>', 'Template name to scaffold')
   .argument('[destination]', 'Destination directory (optional)', '.')
-  .option('-v, --verbose', 'Verbose output')
-  .action(async (templateName: string, destination: string, options) => {
-    const spinner = ora('Initializing...').start();
-    
+  .action(async (templateName: string, destination: string) => {
+    let cloneSpinner: Ora | undefined;
+    let envSpinner: Ora | undefined;
+    let depsSpinner: Ora | undefined;
+
     try {
-      if (options.verbose) {
-        console.log(chalk.blue(`Looking for template: ${templateName}`));
-      }
+      const result = await scaffoldTemplate(templateName, destination, {
+        onCloneStart(template: Template, targetDir: string) {
+          cloneSpinner = ora(`Cloning ${chalk.cyan(template.name)} template...`).start();
+        },
+        onCloneSuccess(template: Template, targetDir: string) {
+          cloneSpinner?.succeed(chalk.green(`Repository cloned successfully`));
+        },
+        onEnvironmentStart(targetDir: string) {
+          envSpinner = ora('Setting up environment file...').start();
+        },
+        onEnvironmentSuccess(targetDir: string, created: boolean) {
+          if (created) {
+            envSpinner?.succeed(chalk.green('.env file created from .env.example'));
+          } else {
+            envSpinner?.info(chalk.blue('No .env.example found or .env already exists'));
+          }
+        },
+        onDependenciesStart(targetDir: string) {
+          depsSpinner = ora('Installing dependencies...').start();
+        },
+        onDependenciesSuccess(targetDir: string, managers: DependencyManager[]) {
+          if (managers.length > 0) {
+            const managersList = managers.map((m) => m.toUpperCase()).join(' and ');
+            depsSpinner?.succeed(chalk.green(`Dependencies installed (${managersList})`));
+          } else {
+            depsSpinner?.info(chalk.blue('No dependency files found'));
+          }
+        }
+      });
 
-      const template = availableTemplates.find(t => t.name === templateName);
-      
-      if (!template) {
-        spinner.fail();
-        console.error(chalk.red(`Template "${templateName}" not found.`));
-        console.log(chalk.yellow('Available templates:'));
-        availableTemplates.forEach(t => {
-          console.log(`  - ${chalk.green(t.name)}: ${t.description}`);
-        });
-        process.exit(1);
-      }
-
-      spinner.text = `Scaffolding ${templateName}...`;
-      
-      await scaffoldTemplate(template, destination, options.verbose);
-      
-      spinner.succeed(chalk.green(`Successfully scaffolded ${templateName}!`));
-      
-      if (options.verbose) {
-        console.log(chalk.blue(`Template created in: ${destination}`));
-      }
+      console.log();
+      console.log(chalk.green.bold('✓ Project ready!'));
+      console.log();
+      const instructions = displaySetupInstructions(result.template.name, result.targetDirectory);
+      instructions.forEach((line, index) => {
+        if (index === 0) {
+          console.log(chalk.green(line));
+        } else if (line.startsWith('  ')) {
+          if (line.includes('cd ')) {
+            console.log(chalk.cyan(line));
+          } else {
+            console.log(chalk.white(line));
+          }
+        } else {
+          console.log(chalk.blue(line));
+        }
+      });
+      console.log();
+      console.log(chalk.gray('For more information, check the README.md file in your project directory.'));
+      console.log();
     } catch (error) {
-      spinner.fail();
-      console.error(chalk.red('Error scaffolding template:'), error);
+      cloneSpinner?.fail();
+      envSpinner?.fail();
+      depsSpinner?.fail();
+
+      console.log();
+      console.error(chalk.red('✖ Error:'), error instanceof Error ? error.message : String(error));
+      console.log();
+
+      if (error instanceof Error && error.message.includes('not available')) {
+        console.log(chalk.yellow('Available templates:'));
+        availableTemplates.forEach((t) => {
+          console.log(`  ${chalk.cyan(t.name)} - ${t.description}`);
+        });
+        console.log();
+      }
+
       process.exit(1);
     }
   });
@@ -55,11 +96,14 @@ program
   .command('list')
   .description('List all available templates')
   .action(() => {
-    console.log(chalk.blue('Available templates:'));
-    availableTemplates.forEach(template => {
-      console.log(`  ${chalk.green(template.name)} - ${template.description}`);
-      console.log(`    Version: ${template.version}`);
-      console.log(`    Repository: ${template.url}`);
+    console.log();
+    console.log(chalk.blue.bold('Available templates:'));
+    console.log();
+    availableTemplates.forEach((template) => {
+      console.log(`  ${chalk.cyan.bold(template.name)}`);
+      console.log(`    ${chalk.white(template.description)}`);
+      console.log(`    ${chalk.gray('Version:')} ${template.version}`);
+      console.log(`    ${chalk.gray('Repository:')} ${template.url}`);
       console.log();
     });
   });
