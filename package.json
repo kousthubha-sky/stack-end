@@ -1,0 +1,22 @@
+{
+  "name": "stack-end",
+  "version": "0.0.1",
+  "description": "CLI tool for scaffolding backend templates",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "stack-end": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --loader tsx src/cli.ts",
+    "test": "echo \"Error: no test specified\""
+  },
+  "keywords": ["cli", "templates", "backend"],
+  "author": "your-name",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
