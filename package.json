@@ -1,20 +1,41 @@
 {
   "name": "stack-end",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "CLI tool for scaffolding backend templates",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "stack-end": "dist/cli.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "node --import tsx src/cli.ts",
     "test": "echo \"Error: no test specified\""
   },
-  "keywords": ["cli", "templates", "backend"],
-  "author": "your-name",
+  "keywords": [
+    "cli",
+    "scaffold",
+    "templates",
+    "backend",
+    "generator",
+    "boilerplate",
+    "starter"
+  ],
+  "author": "kousthubha-sky",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kousthubha-sky/stack-end.git"
+  },
+  "homepage": "https://github.com/kousthubha-sky/stack-end#readme",
+  "bugs": {
+    "url": "https://github.com/kousthubha-sky/stack-end/issues"
+  },
   "dependencies": {
     "chalk": "^5.3.0",
     "ora": "^7.0.1",
@@ -26,5 +47,8 @@
     "typescript": "^5.0.0",
     "@types/node": "^20.8.0",
     "tsx": "^4.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
